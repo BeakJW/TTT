@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="org.zerock.myapp.mapper.JoinMapper">
+  
+  	<select id="select" resultType="org.zerock.myapp.domain.UsersVO">
+        SELECT * 
+        FROM users
+        WHERE uids = #{uids}
+    </select>
+    
+      <select id="selectEmail" resultType="org.zerock.myapp.domain.UsersVO">
+        SELECT * 
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <delete id="remove">
+        UPDATE users 
+        SET is_delete = 1 , reason = #{reason}, status = '탈퇴'
+        WHERE uids = #{uids}
+    </delete>
+
+    <insert id="join">
+      Insert into users(uids, password, name, phonenumber, email, image) 
+      values(#{uids}, #{password}, #{name}, #{phonenumber}, #{email}, #{image})
+    </insert>
+
+    <update id="update">
+        UPDATE users
+        SET password = #{password},
+        	name = #{name},
+            phonenumber = #{phonenumber},
+            email = #{email},
+            image = #{image}
+        WHERE
+            uids = #{uids}
+    </update>
+   
+    <select id="checkId" resultType="int">
+        select count(*) 
+        from users 
+        where uids=#{uids}
+    </select>
+    
+    <select id="checkEmail" resultType="int">
+        select count(*) 
+        from users 
+        where email = #{email}
+    </select>
+
+  </mapper>
+  
+ 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.myapp.mapper.QnaMapper">
+
+    <select id="select" resultType="org.zerock.myapp.domain.QnaVO">
+        SELECT *
+        FROM qna_board
+        WHERE qid = #{qid}
+    </select>
+    
+     <select id="search" resultType="org.zerock.myapp.domain.QnaVO">
+     SELECT *
+     FROM qna_board
+     <if test= 'type != null'>
+            <choose>
+                <when test='type.equals("title")'>
+                    WHERE title LIKE concat('%' || #{keyword}, '%')
+                </when>
+                <when test='type.equals("content")'>
+                    WHERE content LIKE concat('%' || #{keyword}, '%')
+                </when>
+                <when test='type.equals("title_content")'>
+                    WHERE title LIKE concat('%' || #{keyword}, '%') OR content LIKE concat('%'|| #{keyword}, '%')
+                </when>
+                <when test='type.equals("uids")'>
+                    WHERE uids LIKE concat('%' || #{keyword}, '%')
+                </when>
+                <when test='type == ""'>
+                    WHERE (title LIKE concat('%' || #{keyword}, '%') OR content LIKE concat('%' || #{keyword}, '%') OR uids LIKE concat('%'|| #{keyword}, '%'))
+                </when>
+            </choose>
+        </if>
+        ORDER BY qid DESC
+        OFFSET (#{currPage} - 1) * #{amount} ROWS	
+		FETCH NEXT #{amount} ROWS ONLY
+    </select>
+
+    <delete id="delete">
+      DELETE FROM qna_board WHERE qid = #{qid}
+    </delete>
+
+    <insert id="insert">
+      INSERT INTO qna_board (title, content, image, uids, openy_n)
+      VALUES (#{title}, #{content}, #{image}, #{uids}, #{openy_n})
+    </insert>
+
+    <update id="update">
+      UPDATE qna_board
+      SET
+        title = #{title},
+        content = #{content},
+        image = #{image},
+        uids = #{uids},
+        update_ts = current_date
+      WHERE
+        qid = #{qid}
+    </update>
+
+</mapper>

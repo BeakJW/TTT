@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<beans:bean class="java.lang.String" id="uploadPath">
+		<beans:constructor-arg value="C:/Users/naa10/git/2023-finalproject/finalproject/src/main/webapp/resources"/>
+	</beans:bean>
+	
+
+	<resources location="/resources/imgUpload/" mapping="/imgUpload/**"/>
+	
+	<beans:bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<beans:property name="maxUploadSize" value="10485760"/>
+	</beans:bean>
+	
+	<context:component-scan base-package="org.zerock.myapp.controller" />
+	<context:component-scan base-package="org.zerock.myapp.interceptor"/>
+	<context:component-scan base-package="org.zerock.myapp.exception"/>
+
+	<!-- 가상의 게시판 및 로그인 서비스에 대한 뷰컨트롤러 설정 -->
+
+	<view-controller path="/common/information" view-name="/common/information" status-code="200" />
+	<view-controller path="/common/clause" 		view-name="/common/clause" 		status-code="200" />
+	<view-controller path="/common/leftside" 	view-name="/common/leftside" 	status-code="200" />
+
+
+	<!-- interceptor 설정 -->
+	<interceptors>
+      <interceptor>
+         <mapping path="/user/loginPost" />
+
+         <beans:ref bean="loginInterceptor"/>
+      </interceptor>
+      
+      <interceptor>
+         <mapping path="/user/logout" />
+
+         <beans:ref bean="logoutInterceptor"/>
+      </interceptor>
+
+      <interceptor>
+         <mapping path="/mypage/*" />
+
+         <beans:ref bean="loginCheckInterceptor"/>
+      </interceptor>
+      
+      <interceptor>
+         <mapping path="/freeboard/*" />
+         <exclude-mapping path="/freeboard/list" />
+         <exclude-mapping path="/freeboard/get" />
+         <exclude-mapping path="/freeboard/prev" />
+         <exclude-mapping path="/freeboard/next" />
+
+         <beans:ref bean="authInterceptor"/>
+      </interceptor>
+	  
+	  <interceptor>
+	  	<mapping path="/reports/register" />
+
+		<beans:ref bean="authInterceptor"/>
+	  </interceptor>
+	  
+	  <interceptor>
+	  	<mapping path="/plan/list" />
+
+		<beans:ref bean="authInterceptor"/>
+	  </interceptor>
+	  
+	</interceptors>
+	
+</beans:beans>
